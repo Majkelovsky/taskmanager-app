@@ -1,0 +1,5 @@
+git init
+git remote add origin https://github.com/TWOJA-NAZWA/taskmanager-app.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
