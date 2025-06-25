@@ -1,5 +1,28 @@
-git init
-git remote add origin https://github.com/Majkelovsky/taskmanager-app.git
-git add .
-git commit -m "Initial commit"
-git push -u origin master
+// server.js (Node.js + Express)
+const express = require('express');
+const app = express();
+const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+
+const db = new sqlite3.Database('./taskmanager.db');
+
+// GET all tasks
+app.get('/tasks', (req, res) => {
+    db.all("SELECT * FROM Tasks", [], (err, rows) => {
+        if (err) return res.status(500).json(err);
+        res.json(rows);
+    });
+});
+
+// POST new task
+app.post('/tasks', (req, res) => {
+    const { title, description, assignedTo } = req.body;
+    db.run("INSERT INTO Tasks (title, description, assignedTo, status) VALUES (?, ?, ?, 'To Do')",
+        [title, description, assignedTo], function(err) {
+            if (err) return res.status(500).json(err);
+            res.json({ id: this.lastID });
+        });
+});
+
+app.listen(3000, () => console.log('Server running on http://localhost:3000'));
